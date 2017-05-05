@@ -1,3 +1,4 @@
+mysql-deployment-yaml(parent, vars) ::= <<
 apiVersion: v1
 kind: Service
 metadata:
@@ -11,6 +12,17 @@ spec:
     app: wordpress
     tier: mysql
   clusterIP: None
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-pass
+type: Opaque
+data:
+  root-password:
+  wordpress-db: wordpress-db
+  wordpress-user: wordpress-db
+  wordpress-password: MWYyZDFlMmU2N2Rm
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -28,7 +40,7 @@ spec:
         tier: mysql
     spec:
       containers:
-      - image: mysql:5.6
+      - image: <vars.mysql.image>:<vars.mysql.version>
         name: mysql
         env:
           # $ kubectl create secret generic mysql-pass --from-file=password.txt
@@ -37,7 +49,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: mysql-pass
-              key: password.txt
+              key: root-password
         ports:
         - containerPort: 3306
           name: mysql
@@ -48,3 +60,5 @@ spec:
       - name: mysql-persistent-storage
         persistentVolumeClaim:
           claimName: mysql-pv-claim
+
+>>

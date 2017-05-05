@@ -1,3 +1,4 @@
+wordpress-deployment-yaml(parent, vars) ::= <<
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -14,7 +15,7 @@ spec:
         tier: frontend
     spec:
       containers:
-      - image: wordpress:4.7.3-apache
+      - image: <vars.wordpress.image>:<vars.wordpress.version>
         name: wordpress
         env:
         - name: WORDPRESS_DB_HOST
@@ -34,3 +35,5 @@ spec:
       - name: wordpress-persistent-storage
         persistentVolumeClaim:
           claimName: wp-pv-claim
+
+>>
